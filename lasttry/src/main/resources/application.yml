@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: nexttry
+  #mysql连接配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tourism_map
+    username: root
+    password: qq2314469254
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
