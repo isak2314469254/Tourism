@@ -9,4 +9,6 @@ public interface UserService {
     LoginInfo login(User user);
     //注册
     int register(User user);
+
+
 }

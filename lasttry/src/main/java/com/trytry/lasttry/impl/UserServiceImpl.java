@@ -16,6 +16,7 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    //登录
     @Override
     public LoginInfo login(User user) {
         //根据用户名和密码查询用户
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
         return null;//密码错误
     }
 
+    //注册
     @Override
     public int register(User user) {
         User existUser = userMapper.getUsername(user.getUsername());

@@ -25,11 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/login") || path.startsWith("/api/register")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {

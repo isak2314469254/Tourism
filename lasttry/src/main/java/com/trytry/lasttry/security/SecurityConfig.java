@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // 关闭 CSRF 保护（针对 REST API）
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/register").permitAll() // 放行登录和注册
+                        .requestMatchers("/api/login", "/api/register", "/api/interest-tags").permitAll() // 放行登录和注册
                         .anyRequest().authenticated() // 其他请求需要认证
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 关闭 session，使用 JWT 认证

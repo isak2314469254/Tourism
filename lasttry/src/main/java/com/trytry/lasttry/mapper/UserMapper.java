@@ -1,9 +1,7 @@
 package com.trytry.lasttry.mapper;
 
 import com.trytry.lasttry.pojo.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
