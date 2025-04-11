@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @Slf4j
 public class InterestsController {
-    //TODO: interests controller
 
     @Autowired
     private TagService tagService;
