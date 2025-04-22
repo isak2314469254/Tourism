@@ -4,13 +4,16 @@ import com.trytry.lasttry.mapper.DiaryMapper;
 import com.trytry.lasttry.mapper.UserMapper;
 import com.trytry.lasttry.pojo.Diary;
 import com.trytry.lasttry.pojo.DiaryContent;
+import com.trytry.lasttry.pojo.DiaryDocument;
 import com.trytry.lasttry.pojo.DiarySearchList;
 import com.trytry.lasttry.service.DiaryService;
 import com.trytry.lasttry.utils.CompressionUtil;
+import com.trytry.lasttry.utils.DiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,8 @@ public class DiaryServiceImpl implements DiaryService {
     private DiaryMapper diaryMapper;
     @Autowired
     private UserMapper userMapperrTemp;
+    @Autowired
+    private DiaryRepository diaryRepository;
 
     //发布日志
     @Override
@@ -32,6 +37,14 @@ public class DiaryServiceImpl implements DiaryService {
         diary.setTitle(title);
         diary.setContent(compressed);
         diaryMapper.insertDiary(diary);
+
+        //把日记存入搜索索引
+        DiaryDocument diaryDocument = new DiaryDocument();
+        diaryDocument.setId(diary.getDiaryId().toString());
+        diaryDocument.setTitle(title);
+        diaryDocument.setContent(contentRaw);
+        diaryRepository.save(diaryDocument);
+
         return diary.getDiaryId();
     }
 
@@ -78,7 +91,15 @@ public class DiaryServiceImpl implements DiaryService {
     //根据标题或者文本内容搜索日记
     //Todo此算法每页数量与页码未进行规定
     public List<Diary> searchDiaryByTitleOrContent(String keyword, int offset, int limit, String sort_by){
-
+        List<DiaryDocument> diaryDocuments = diaryRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+        List<Integer> ids = diaryDocuments.stream()
+                .map(diaryDocument -> Integer.parseInt(diaryDocument.getId()))
+                .collect(Collectors.toList());
+        if (diaryDocuments == null || diaryDocuments.isEmpty()) {
+            // 你可以加日志，也可以前端自己判断显示“无结果”
+            return Collections.emptyList();
+        }
+        return diaryMapper.getDiariesByIds(ids, offset, limit, sort_by);
     }
 
     //日记评分
@@ -132,9 +153,10 @@ public class DiaryServiceImpl implements DiaryService {
         }
     }
 
-    //日记评分
-//    @Override
-//    public void rateDiary(Integer diaryId, Integer userId, Integer rating){
-//
-//    }
+    //获得所有的日记
+    @Override
+    public List<Diary> getAllDiary(){
+        return diaryMapper.getAllDiary();
+    }
+
 }

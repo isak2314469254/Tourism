@@ -11,7 +11,7 @@ public interface DiaryMapper {
     //创建日记
     @Insert("INSERT INTO diary(user_id, spot_id, title, content) " +
             "VALUES(#{userId}, #{spotId}, #{title}, #{content, typeHandler= com.trytry.lasttry.utils.BlobTypeHandler})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "diaryId")
     int insertDiary(Diary diary);
 
     //根据日记id获取日记
@@ -80,6 +80,30 @@ public interface DiaryMapper {
                                         @Param("orderBy") String orderBy
     );
 
+    //根据日记编号得到多篇日记
+    @Select({
+            "<script>",
+            "SELECT * FROM diary WHERE id IN ",
+            "<foreach item='id' collection='ids' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    })
+    @Results({
+            @Result(column = "content", property = "content", typeHandler = com.trytry.lasttry.utils.BlobTypeHandler.class),
+            @Result(column = "id", property = "diaryId"),
+            @Result(column = "user_id", property = "userId"),
+            @Result(column = "spot_id", property = "spotId"),
+            @Result(column = "avg_rating", property = "avgRating"),
+            @Result(column = "rating_count", property = "ratingCount"),
+            @Result(column = "created_at", property = "createdAt"),
+            @Result(column = "update_at", property = "updatedAt")
+    })
+    List<Diary> getDiariesByIds(@Param("ids") List<Integer> ids,
+                                @Param("offset") int offset,
+                                @Param("limit") int limit,
+                                @Param("orderBy") String orderBy);
+
     //获取日记当前评分
     @Select("SELECT avg_rating, rating_count FROM diary WHERE id = #{id}")
     Diary getDiaryRating(Integer id);
@@ -103,4 +127,18 @@ public interface DiaryMapper {
     //views++
     @Update("UPDATE diary SET views = views + 1 WHERE id = #{id}")
     int increaseViews(Integer id);
+
+    //获得所有的日记，用于添加进入索引
+    @Select("SELECT * FROM diary")
+    @Results({
+            @Result(column = "content", property = "content", typeHandler = com.trytry.lasttry.utils.BlobTypeHandler.class),
+            @Result(column = "id", property = "diaryId"),
+            @Result(column = "user_id", property = "userId"),
+            @Result(column = "spot_id", property = "spotId"),
+            @Result(column = "avg_rating", property = "avgRating"),
+            @Result(column = "rating_count", property = "ratingCount"),
+            @Result(column = "created_at", property = "createdAt"),
+            @Result(column = "update_at", property = "updatedAt")
+    })
+    List<Diary> getAllDiary();
 }

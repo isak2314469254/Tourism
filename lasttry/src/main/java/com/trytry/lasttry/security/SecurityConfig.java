@@ -18,12 +18,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // 关闭 CSRF 保护（针对 REST API）
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/hello1",
                                 "/api/login",
                                 "/api/register",
                                 "/api/interest-tags",
                                 "/api/diaries/{diary_id}",
                                 "/api/diaries/search",
-                                "/api/diaries"
+                                "/api/diaries",
+                                "/api/diaries/title",
+                                "/api/test/sync"
                         ).permitAll() // 放行登录和注册
                         .anyRequest().authenticated() // 其他请求需要认证
                 )

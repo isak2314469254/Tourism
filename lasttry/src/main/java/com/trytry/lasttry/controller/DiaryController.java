@@ -75,6 +75,25 @@ public class DiaryController {
         return Result.success(diarySearchResult,"根据景点编号搜索日记成功");
     }
 
+    //根据内容与标题模糊搜索日记
+    //Todo 此处的页码与每页展示没有进行规范
+    @GetMapping("/api/diaries/title")
+    public Result searchDiaryByTitleOrContent(
+            @RequestParam String keyword,
+            @RequestParam Integer offset,
+            @RequestParam Integer limit,
+            @RequestParam String sort_by
+    ) {
+        log.info("根据文章内容或标题模糊搜索日记");
+        List<Diary> diaries = diaryService.searchDiaryByTitleOrContent(keyword, offset, limit,
+                diaryService.mapOrderBy(sort_by));
+        if(diaries == null || diaries.isEmpty()) return Result.error("无相关日记");
+        int count = diaries.size();
+        List<DiarySearchList> diarySearchLists = diaryService.diaryListToViewList(diaries);
+        DiarySearchResult diarySearchResult = new DiarySearchResult(count, diarySearchLists);
+        return Result.success(diarySearchResult,"根据文章内容或标题模糊搜索日记成功");
+    }
+
     //获取日志详情
     @GetMapping("/api/diaries/{diary_id}")
     public Result getDiaryDetail(@PathVariable Integer diary_id) throws IOException {

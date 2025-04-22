@@ -4,10 +4,8 @@ import com.trytry.lasttry.pojo.Diary;
 import com.trytry.lasttry.pojo.DiaryContent;
 import com.trytry.lasttry.pojo.DiarySearchList;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public interface DiaryService {
 
@@ -43,6 +41,7 @@ public interface DiaryService {
     //排序字符转换
     public String mapOrderBy(String orderBy);
 
-//    //进行日记评分
-//    void rateDiary(Integer diaryId, Integer userId, Integer score);
+    //获取所有日记
+    List<Diary> getAllDiary();
+
 }
