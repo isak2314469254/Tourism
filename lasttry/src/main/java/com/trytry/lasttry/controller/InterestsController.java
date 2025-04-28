@@ -1,6 +1,7 @@
 package com.trytry.lasttry.controller;
 
 
+import com.trytry.lasttry.pojo.InterestsInfo;
 import com.trytry.lasttry.pojo.Result;
 import com.trytry.lasttry.pojo.Tag;
 import com.trytry.lasttry.pojo.TagRequest;
@@ -34,7 +35,8 @@ public class InterestsController {
         List<Integer> tagIds = tagRequest.getTagIds();
         log.info("Received tagIds: {}", tagIds);
         tagService.updateInterests(user_id, tagIds);
-        return Result.success(null, "更新兴趣标签成功");
+        InterestsInfo interestsInfo = new InterestsInfo(user_id, tagService.getTagsByIds(tagIds));
+        return Result.success(interestsInfo, "更新兴趣标签成功");
     }
 
     //获得用户的兴趣标签

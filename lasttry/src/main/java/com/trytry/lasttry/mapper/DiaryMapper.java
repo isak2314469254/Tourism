@@ -87,6 +87,9 @@ public interface DiaryMapper {
             "<foreach item='id' collection='ids' open='(' separator=',' close=')'>",
             "#{id}",
             "</foreach>",
+            "<if test='orderBy != null'>",
+            "ORDER BY ${orderBy} DESC",
+            "</if>",
             "</script>"
     })
     @Results({

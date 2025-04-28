@@ -14,4 +14,10 @@ public interface TagService {
 
     //获取用户的兴趣标签
     public List<Tag> getTagsByUserId(Integer user_id);
+
+    //通过所有标签ID获得标签内容
+    public List<String> getTagsByIds(List<Integer> tagIds);
+
+    //orderBy的映射
+    public String mapOrderBy(String orderBy);
 }

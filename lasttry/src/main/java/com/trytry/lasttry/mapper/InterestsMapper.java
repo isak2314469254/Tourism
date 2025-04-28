@@ -29,4 +29,15 @@ public interface InterestsMapper {
     //根据用户id查询兴趣标签
     @Select("SELECT * FROM interest_tags WHERE interest_tags.tag_id IN (SELECT tag_seek FROM user_interests WHERE user_seek = #{user_id})")
     List<Tag> findTagsByUserId(@Param("user_id") Integer user_id);
+
+    //根据多个标签id查询兴趣标签内容
+    @Select({
+            "<script>",
+            "SELECT tag_name FROM interest_tags WHERE tag_id IN",
+            "<foreach item='id' collection='tagIds' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    })
+    List<String> findTagsByTagIds(@Param("tagIds") List<Integer> tagIds);
 }

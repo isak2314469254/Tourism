@@ -33,4 +33,19 @@ public class TagServiceImpl implements TagService {
     public List<Tag> getTagsByUserId(Integer user_id) {
         return interestsMapper.findTagsByUserId(user_id);
     }
+
+    //通过多个标签ID获得标签内容
+    @Override
+    public List<String> getTagsByIds(List<Integer> tagIds){
+        return interestsMapper.findTagsByTagIds(tagIds);
+    }
+
+    //orderBy的映射
+    public String mapOrderBy(String orderBy){
+        return switch (orderBy) {
+            case "heat" -> "views";
+            case "rating" -> "avg_rating";
+            default -> throw new IllegalArgumentException("Invalid orderBy value");
+        };
+    }
 }

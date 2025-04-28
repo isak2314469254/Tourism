@@ -7,6 +7,7 @@ import com.trytry.lasttry.pojo.DiaryContent;
 import com.trytry.lasttry.pojo.DiaryDocument;
 import com.trytry.lasttry.pojo.DiarySearchList;
 import com.trytry.lasttry.service.DiaryService;
+import com.trytry.lasttry.service.TagService;
 import com.trytry.lasttry.utils.CompressionUtil;
 import com.trytry.lasttry.utils.DiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class DiaryServiceImpl implements DiaryService {
     private UserMapper userMapperrTemp;
     @Autowired
     private DiaryRepository diaryRepository;
+    @Autowired
+    private TagService tagService;
 
     //发布日志
     @Override
@@ -79,12 +82,15 @@ public class DiaryServiceImpl implements DiaryService {
     //获取日记列表
     @Override
     public List<Diary> getDiaryList(int page, int size, String sortBy){
-        return diaryMapper.getDiaryListPaged(page, size, sortBy);
+        String OrderByMapped = tagService.mapOrderBy(sortBy);
+        //sortBy映射放入下面这个函数中了
+        return diaryMapper.getDiaryListPaged(page, size, OrderByMapped);
     }
 
     //根据景点编号搜索日记 -> <根据名称搜索日记>
     public List<Diary> searchDiaryBySpotName(String spot_name, int offset, int limit, String sort_by){
         Integer spotId = diaryMapper.getSpotIdByName(spot_name);
+        //该处映射已经完成过了，在diaryService中
         return diaryMapper.getDiaryListBySpotIdPaged(spotId, offset, limit, sort_by);
     }
 
@@ -99,6 +105,7 @@ public class DiaryServiceImpl implements DiaryService {
             // 你可以加日志，也可以前端自己判断显示“无结果”
             return Collections.emptyList();
         }
+        //该处映射已经完成过了，在diaryService中
         return diaryMapper.getDiariesByIds(ids, offset, limit, sort_by);
     }
 

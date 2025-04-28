@@ -19,6 +19,9 @@ import java.util.Collections;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    //用于快速测试的假token
+    private static final String FAKE_TOKEN = "Bearer faketoken123456";
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain chain
@@ -26,8 +29,28 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-
         String token = request.getHeader("Authorization");
+
+        // ✅ 如果带了假 token，直接放行认证
+        if (token != null && token.equals(FAKE_TOKEN)) {
+            UserDetails userDetails = new User(
+                    "fake-user", "", Collections.emptyList()
+            );
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            chain.doFilter(request, response);
+            return;
+        }
+
 
         if (token != null && token.startsWith("Bearer ")) {
             String username = JwtUtil.verifyToken(token.substring(7));
