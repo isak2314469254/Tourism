@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "tourism";
+    private static final String SECRET = "xK2#9gH!pLmN$5rT_vE7qW8zY1bC0dF4";
     private static final long EXPIRATION_TIME = 3600000; // 1小时
 
     // 生成 Token
