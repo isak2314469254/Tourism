@@ -10,12 +10,14 @@ import com.trytry.lasttry.service.DiaryService;
 import com.trytry.lasttry.service.TagService;
 import com.trytry.lasttry.utils.CompressionUtil;
 import com.trytry.lasttry.utils.DiaryRepository;
+import com.trytry.lasttry.utils.OrderByUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,7 +74,9 @@ public class DiaryServiceImpl implements DiaryService {
         diaryContent.setHeat(diary.getViews());
         //同时views++
         diaryMapper.increaseViews(diaryId);
-        diaryContent.setRating(diary.getAvgRating() != null ? diary.getAvgRating() : 0.0);
+        double avgRating = diary.getAvgRating() != null ? diary.getAvgRating() : 0.0;
+        double rounded = Math.round(avgRating * 100.0) / 100.0;
+        diaryContent.setRating(rounded);
         diaryContent.setSpot(diaryMapper.getNameBySpotId(diary.getSpotId()));
         diaryContent.setPublishTime(diary.getCreatedAt());
         return diaryContent;
@@ -82,16 +86,39 @@ public class DiaryServiceImpl implements DiaryService {
     //获取日记列表
     @Override
     public List<Diary> getDiaryList(int page, int size, String sortBy){
-        String OrderByMapped = tagService.mapOrderBy(sortBy);
-        //sortBy映射放入下面这个函数中了
-        return diaryMapper.getDiaryListPaged(page, size, OrderByMapped);
+        List<Diary> diaries = this.getAllDiary();
+        int right = diaries.size();
+        if(Objects.equals(sortBy, "heat"))
+        {
+            OrderByUtil.quickSort_views(diaries, 0, right - 1);
+        }
+        else if(Objects.equals(sortBy, "rating"))
+        {
+            OrderByUtil.quickSort_rating(diaries, 0, right - 1);
+        }
+        else return null;
+        return OrderByUtil.paginate(diaries, page, size);
+//        String OrderByMapped = tagService.mapOrderBy(sortBy);
+//        //sortBy映射放入下面这个函数中了
+//        return diaryMapper.getDiaryListPaged(page, size, OrderByMapped);
     }
 
     //根据景点编号搜索日记 -> <根据名称搜索日记>
     public List<Diary> searchDiaryBySpotName(String spot_name, int offset, int limit, String sort_by){
         Integer spotId = diaryMapper.getSpotIdByName(spot_name);
         //该处映射已经完成过了，在diaryService中
-        return diaryMapper.getDiaryListBySpotIdPaged(spotId, offset, limit, sort_by);
+        List<Diary> diaries = diaryMapper.getDiaryListBySpotIdPaged(spotId);
+        int right = diaries.size();
+        if(Objects.equals(sort_by, "views"))
+        {
+            OrderByUtil.quickSort_views(diaries, 0, right - 1);
+        }
+        else if(Objects.equals(sort_by, "avg_rating"))
+        {
+            OrderByUtil.quickSort_rating(diaries, 0, right - 1);
+        }
+        else return null;
+        return OrderByUtil.paginate(diaries, offset, limit);
     }
 
     //根据标题或者文本内容搜索日记
@@ -106,7 +133,18 @@ public class DiaryServiceImpl implements DiaryService {
             return Collections.emptyList();
         }
         //该处映射已经完成过了，在diaryService中
-        return diaryMapper.getDiariesByIds(ids, offset, limit, sort_by);
+        List<Diary> diaries = diaryMapper.getDiariesByIds(ids);
+        int right = diaries.size();
+        if(Objects.equals(sort_by, "views"))
+        {
+            OrderByUtil.quickSort_views(diaries, 0, right - 1);
+        }
+        else if(Objects.equals(sort_by, "avg_rating"))
+        {
+            OrderByUtil.quickSort_rating(diaries, 0, right - 1);
+        }
+        else return null;
+        return OrderByUtil.paginate(diaries, offset, limit);
     }
 
     //日记评分

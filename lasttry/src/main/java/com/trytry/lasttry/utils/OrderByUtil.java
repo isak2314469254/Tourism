@@ -57,7 +57,7 @@ public class OrderByUtil {
 
     // 分页方法
     public static List<Diary> paginate(List<Diary> diaries, int page, int pageSize) {
-        int fromIndex = (page - 1) * pageSize;
+        int fromIndex = page * pageSize;
         if (fromIndex >= diaries.size()) return new ArrayList<>();
         int toIndex = Math.min(fromIndex + pageSize, diaries.size());
         return diaries.subList(fromIndex, toIndex);
