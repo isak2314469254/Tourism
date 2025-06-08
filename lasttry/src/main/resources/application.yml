@@ -4,9 +4,9 @@ spring:
   #mysql连接配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tourism_map
+    url: jdbc:mysql://localhost:3306/tourism_map?useSSL=false&serverTimezone=UTC
     username: root
-    password: qq2314469254
+    password: qq2314469254e
 
   #elasticsearch连接配置
 
